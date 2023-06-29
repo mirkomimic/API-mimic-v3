@@ -1,0 +1,22 @@
+{
+    "name": "seytar/php-router",
+    "description": "The Laravel router, for use outside of the Laravel framework",
+    "keywords": ["laravel", "router"],
+    "license": "MIT",
+    "homepage": "https://github.com/seytar/php-router",
+    "authors": [
+        {
+            "name": "Saadettin Sivaz",
+            "homepage": "https://github.com/seytar"
+        }
+    ],
+    "require": {
+        "illuminate/routing": "5.*",
+        "illuminate/events": "5.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Seytar\\Routing\\": "src/"
+        }
+    }
+}
