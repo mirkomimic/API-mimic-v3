@@ -14,4 +14,15 @@ class Url
 
     return $params;
   }
+
+  public static function getParamsString()
+  {
+    $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $url_components = parse_url($url);
+
+    if (isset($url_components["query"]))
+      return '?' . $url_components["query"];
+    else
+      return null;
+  }
 }

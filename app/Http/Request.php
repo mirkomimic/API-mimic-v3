@@ -6,7 +6,7 @@ use stdClass;
 
 class Request
 {
-  public static function getArray(): stdClass
+  public static function getArray()
   {
     $request = file_get_contents('php://input');
     $request = json_decode($request);

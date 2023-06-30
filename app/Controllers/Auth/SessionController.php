@@ -14,25 +14,6 @@ use App\Http\Requests\LoginRequest;
 class SessionController
 {
 
-  private function check(string $token): bool
-  {
-    // $user = $_SESSION['user'] ?? null;
-    $user = Auth::user();
-
-    if (isset($user) && $user->token() !== null && $user->token() == $token && ($user->tokenExpiryTime() > time()))
-      return true;
-    else {
-      return false;
-    }
-  }
-
-  public function getUserByEmail(string $email)
-  {
-    $user = Query::select()->table('users')->where('email', '=', $email)->getModel();
-
-    return $user;
-  }
-
   public function login()
   {
     $request = Request::getArray();
@@ -73,7 +54,7 @@ class SessionController
 
     $accesstoken = $_SERVER['HTTP_AUTHORIZATION'];
 
-    if (!$this->check($accesstoken)) {
+    if (!self::check($accesstoken)) {
       $response = new Response();
       $response->set_httpStatusCode(401);
       $response->set_success(false);
@@ -92,5 +73,23 @@ class SessionController
     $response->set_message("User logged out.");
     $response->send();
     exit;
+  }
+
+  public static function check(string $token): bool
+  {
+    $user = Auth::user();
+
+    if (isset($user) && $user->token() !== null && $user->token() == $token && ($user->tokenExpiryTime() > time()))
+      return true;
+    else {
+      return false;
+    }
+  }
+
+  public function getUserByEmail(string $email)
+  {
+    $user = Query::select()->table('users')->where('email', '=', $email)->getModel();
+
+    return $user;
   }
 }

@@ -2,31 +2,64 @@
 
 namespace App\Controllers;
 
+use App\Http\Url;
+use App\Http\Request;
+use App\Http\Response;
 use App\Models\Product;
 use App\Utilities\Query;
 use App\Utilities\Paginator;
 use App\Resources\ProductResource;
+use App\Controllers\Auth\SessionController;
 
 class ProductController
 {
 
-  public static function index($request, int $page = 1)
+  public static function index(int $page = 1)
   {
-    $products = Product::filter($request);
+    $params = Url::getParams();
+
+    $products = Product::filter($params);
     $products = ProductResource::collection($products);
     $products = Paginator::paginate($products, $page, 5);
 
-    return $products;
+    $response = new Response();
+    $response->set_httpStatusCode(200);
+    $response->set_success(true);
+    $response->set_data($products);
+    $response->send();
+    exit;
   }
 
-  public static function store($request)
+  public static function store()
   {
+
+    $accesstoken = $_SERVER['HTTP_AUTHORIZATION'];
+
+    if (!SessionController::check($accesstoken)) {
+      $response = new Response();
+      $response->set_httpStatusCode(401);
+      $response->set_success(false);
+      $response->set_message("Access token not valid or it has expired");
+      $response->send();
+      exit;
+    }
+
+    $request = Request::getArray();
+
     $product = Product::create([
       'name' => $request->name,
       'price' => $request->price
     ]);
 
-    return new ProductResource($product);
+    $data = new ProductResource($product);
+
+    $response = new Response();
+    $response->set_httpStatusCode(200);
+    $response->set_success(true);
+    $response->set_data($data);
+    $response->set_message("Product Added");
+    $response->send();
+    exit;
   }
 
   public static function checkIfProductsExists(array $array)

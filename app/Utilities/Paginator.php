@@ -2,6 +2,7 @@
 
 namespace App\Utilities;
 
+use App\Http\Url;
 use Exception;
 
 class Paginator
@@ -31,15 +32,17 @@ class Paginator
     $data['meta']['has_next_page'] = ($page < $numOfPages) ? true : false;
     $data['meta']['has_previous_page'] = ($page > 1) ? true : false;
 
+    $params = Url::getParamsString();
+
     if ($data['meta']['has_next_page']) {
       $nextPage = $page + 1;
-      $data['links']['next_page'] = self::getUrl() . $nextPage;
+      $data['links']['next_page'] = self::getUrl() . '/' . $nextPage . $params ?? "";
     } else {
       $data['links']['next_page'] = null;
     }
     if ($data['meta']['has_previous_page']) {
       $prevPage = $page - 1;
-      $data['links']['prev_page'] = self::getUrl() . $prevPage;
+      $data['links']['prev_page'] = self::getUrl() . '/' . $prevPage . $params ?? "";
     } else {
       $data['links']['prev_page'] = null;
     }
@@ -47,13 +50,27 @@ class Paginator
     return $data;
   }
 
+  // private static function getUrl2()
+  // {
+  //   $url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+  //   if (!str_contains($url, "?"))
+  //     return $url . "?page=";
+
+  //   $url = "http://" . substr($url, 0, strpos($url, "=")) . "=";
+  //   return $url;
+  // }
+
   private static function getUrl()
   {
     $url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    if (!str_contains($url, "?"))
-      return $url . "?page=";
+    $uriArray = explode('/', $_SERVER['REQUEST_URI']);
+    $pageKey = array_search('page', $uriArray);
+    if (isset($uriArray[$pageKey])) {
+      $page = $pageKey + 1;
+      unset($uriArray[$page]);
+    }
+    $url = implode('/', $uriArray);
 
-    $url = "http://" . substr($url, 0, strpos($url, "=")) . "=";
-    return $url;
+    return "http://" . $_SERVER['HTTP_HOST'] . $url;
   }
 }

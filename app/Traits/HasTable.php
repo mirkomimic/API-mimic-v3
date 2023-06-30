@@ -113,10 +113,10 @@ trait HasTable
         $sort = '';
 
         if (str_ends_with($value, 'Asc')) {
-          $field = rtrim($value, 'Asc');
+          $field = substr($value, 0, -3);
           $sort = 'ASC';
         } elseif (str_ends_with($value, 'Desc')) {
-          $field = rtrim($value, 'Desc');
+          $field = substr($value, 0, -4);
           $sort = 'DESC';
         }
 
